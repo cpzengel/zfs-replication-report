@@ -1,0 +1,27 @@
+#!/bin/bash
+echo Liste VMs
+qm list 
+echo Replikationsstatus
+DESTIP=1.1.1.1
+echo Ermittele replizierte Datasets und ZVOLS
+SOURCE=$(zfs get all | grep 'zfs:backup ' | grep -v snap | grep local| awk '{printf "%s\n",$1}')
+ echo Ermittle vorhandene replizierte Datasets und ZVOLS
+ DEST=$(ssh root@$DESTIP zfs list -H -o name | grep 'Replica/')
+ cd /root
+ rm snap*
+echo Liste Snapshots Quelle
+ zfs get written > snap.source
+echo Liste Snapshots Ziel
+ ssh root@$DESTIP 'zfs get written' >snap.$DESTIP
+ echo "--- Prüfe Quelle ---"
+ for i in $SOURCE
+ do
+ cat snap.source| grep $i| tail -1
+ done
+ echo ""
+ echo "--- Prüfe Ziel $DESTIP ---"
+ for i in $DEST
+ do
+ cat snap.$DESTIP | grep $i| tail -1
+ done
+
