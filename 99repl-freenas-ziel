@@ -1,0 +1,19 @@
+date
+echo Replikationsstatus - 99repl
+echo Ermittele replizierte Datasets und ZVOLS
+SOURCE=$(zfs get all | grep written | grep -v freenas-boot|grep -v .alt | grep -v '@' | awk '{printf "%s\n",$1}')
+echo $SOURCE
+echo Liste Snapshots Quelle
+zfs get written > snap.source
+for i in $SOURCE
+do
+cat snap.source| grep $i@| tail -1
+done
+
+zfs get creation> snap.source
+for i in $SOURCE
+do
+cat snap.source| grep $i@| tail -1
+done
+date
+
